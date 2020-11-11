@@ -1,0 +1,25 @@
+{% extends "tv/base.html" %}
+{% block content %}
+
+
+    {% for show in shows %}
+
+
+
+
+  <div class="col mb-4">
+    <div class="card h-100">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">{{ show.title }}</h5>
+          <h6 class="card-title">{{ show.genre }}, First Air date: {{ show.airdate|date:"F d, Y"}}</h6>
+
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+
+
+    {%endfor%}
+
+{%  endblock content %}
