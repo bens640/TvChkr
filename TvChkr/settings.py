@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = '$f&r2n^x+_my_n-^g&_k-2vo@(^o@zr)l8^cdc64povq^c(nd)'
-SECRET_KEY = os.environ.get('TVCHKR_SECRET_KEY_PROD')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
