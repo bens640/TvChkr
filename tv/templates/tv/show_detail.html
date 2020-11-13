@@ -1,25 +1,13 @@
 {% extends "tv/base.html" %} {% block content %}
-
-<div class="card mb-3" style="max-width: 540px;">
-  <div class="row no-gutters">
-    <div class="col-md-4">
-      <img src="https://image.tmdb.org/t/p/w500/{{ object.backdrop_path }}" class="card-img" alt="...">
-    </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">{{ object.title }}</h5>
-          <h6 class="card-title">{{ object.id }}, First Air date: {{ object.first_air_date}}</h6>
-        <p class="card-text"> <p class="card-text">{{ object.overview }}</p>
-        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-      </div>
-    </div>
-  </div>
-</div>
-{%  if object.user == user %}
-
-<a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'tv-update' object.id %}">Update</a>
-<a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'tv-delete' object.id %}">Delete </a>
-
-{% endif %}
-
+    {%   if show.backdrop_path %}
+        <img src="https://image.tmdb.org/t/p/w500/{{ show.backdrop_path }}" class="card-img" alt="...">
+    {% endif %}
+<h1>{{ show.name }} </h1>
+    {% for g in show.genres %}
+    <h2>{{ g.name }}</h2>
+    {% endfor %}
+    <h3>{{ show.overview }}</h3>
+    <h4>First Air Date: {{ show.first_air_date }}</h4>
+    <h4>Next Air Date: {{ show.next_episode_to_air.air_date}}</h4>
+     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add to my shows</button>
 {% endblock content %}

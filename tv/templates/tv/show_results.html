@@ -1,0 +1,10 @@
+{% extends "tv/base.html" %}
+{% block content %}
+
+
+    {% for show in shows %}
+        <h1> <a href="{% url 'tv-detail' show.id %}">{{ show.name }}</a></h1>
+    {%endfor%}
+
+
+{%  endblock content %}
