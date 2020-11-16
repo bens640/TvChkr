@@ -1,13 +1,17 @@
 {% extends "tv/base.html" %} {% block content %}
-    {%   if show.backdrop_path %}
-        <img src="https://image.tmdb.org/t/p/w500/{{ show.backdrop_path }}" class="card-img" alt="...">
+    {%   if poster_path %}
+        <img src="https://image.tmdb.org/t/p/w500/{{ poster_path }}"  style="width: 250px" class="rounded mx-auto d-block" alt="...">
     {% endif %}
-<h1>{{ show.name }} </h1>
-    {% for g in show.genres %}
-    <h2>{{ g.name }}</h2>
-    {% endfor %}
-    <h3>{{ show.overview }}</h3>
-    <h4>First Air Date: {{ show.first_air_date }}</h4>
-    <h4>Next Air Date: {{ show.next_episode_to_air.air_date}}</h4>
-     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add to my shows</button>
+<h1>{{ name }} {% if not in_production  %}<span class="badge badge-danger">Cancelled </span>{% endif %} </h1>
+    <h6>|{% for g in genres %}
+    {{ g.name }} |
+    {% endfor %} </h6>
+    <h3>{{ overview }}</h3>
+    <h4>First Air Date: {{ first_air_date }}</h4>
+    {% if in_production and  next_episode_to_air == null %}<h4>Next Air Date: TBD</h4>
+    {% elif in_production and  next_episode_to_air != null%} <h4>Next Air Date: {{ next_episode_to_air.air_date }}</h4>
+
+    {% endif %}
+    <button class="btn btn-outline my-2 my-sm-0" type="submit" name = "addBtn">Add to my shows</button>
 {% endblock content %}
+

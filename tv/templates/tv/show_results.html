@@ -2,9 +2,16 @@
 {% block content %}
 
 
+<div class="row" >
     {% for show in shows %}
-        <h1> <a href="{% url 'tv-detail' show.id %}">{{ show.name }}</a></h1>
-    {%endfor%}
+
+    <div class="col" >
+        <a href="{% url 'tv-detail' show.id %}">
+        <img src="https://image.tmdb.org/t/p/w185/{{ show.poster_path }}"  alt="...">
+        </a>
+    </div>
+{% endfor %}
+</div>
 
 
 {%  endblock content %}

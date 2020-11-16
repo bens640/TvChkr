@@ -1,12 +1,16 @@
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from TvChkr.settings import TMDB_API
-from .models import Show
+from . import services
+from .models import Show, StShow
 from django.contrib.auth.models import User
 import requests
 import json
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.db.models import Q
+
+from .services import get_top
 
 
 class SearchResultsView(ListView):
@@ -14,7 +18,7 @@ class SearchResultsView(ListView):
     template_name = 'tv/show_results.html'
     context_object_name = 'shows'
 
-    def get_queryset(self):  # new
+    def get_queryset(self):
         query = self.request.GET.get('q')
         response = requests.get(
             'https://api.themoviedb.org/3/search/tv?api_key=' + TMDB_API + '&language=en-US&query=' + query + '&include_adult=false')
@@ -24,7 +28,7 @@ class SearchResultsView(ListView):
         for x in results:
             data.append(x)
         # object_list = Show.objects.filter(Q(title__icontains=query) | Q(genre__icontains=query))
-        print(data)
+        print(results)
         return data
 
 
@@ -34,6 +38,7 @@ class ShowlistView(ListView):
     context_object_name = 'shows'
     ordering = ['airdate']
     paginate_by = 4
+    # genres = services.genre_list()
 
 
 class UserlistView(ListView):
@@ -48,8 +53,10 @@ class UserlistView(ListView):
 
         return Show.objects.filter(user=user).order_by('-airdate')
 
+
 class ShowCreateView(LoginRequiredMixin, CreateView):
     model = Show
+    # template_name = 'tv/show_form.html'
     fields = ['title', 'genre', 'airdate']
 
     def form_valid(self, form):
@@ -82,15 +89,16 @@ class ShowDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
-def new_show_detail(request, pk):
-    id = pk
-    response = requests.get(
-        'https://api.themoviedb.org/3/tv/' + id + '?api_key=' + TMDB_API + '&language=en-US')
-    data = json.loads(response.text)
-    print(data['name'])
-    print('***************')
 
-    return render(request, 'tv/show_detail.html',{"show": data})
+def show_detail(request, pk):
+    response = requests.get(
+        'https://api.themoviedb.org/3/tv/' + pk + '?api_key=' + TMDB_API + '&language=en-US')
+    data = json.loads(response.text)
+
+    if request.method == 'POST':
+        print('button pressed')
+        # add_show(request, data)
+    return render(request, 'tv/show_detail.html', {"show": data})
 
 
 def apitest(request):
@@ -100,12 +108,14 @@ def apitest(request):
     parsed_data = json.loads(response.text)
     data = []
     results = (parsed_data['results'])
-
+    '''
     # print(parsed_data)
     for x in parsed_data:
         # data.append(x)
         data = Show(title=x['name'], airdate=x['first_air_date'], genre=x['genre_ids'], user_id=1)
         data.save()
+    '''
+
     return render(request, 'tv/apitest.html')
 
 
@@ -121,19 +131,35 @@ def playing_today(request):
     return render(request, 'tv/today.html', {"data": data})
 
 
-def detail(request):
-    show_id = '82856';
-    response = requests.get(
-        'https://api.themoviedb.org/3/tv/' + show_id + '?api_key=' + TMDB_API + '&language=en-US')
-    parsed_data = json.loads(response.text)
-    print(parsed_data)
-    print('*******************')
-    data = []
-    for x in parsed_data:
-        data.append(x)
-
-    return render(request, 'tv/today.html', {"data": data})
-
-
 def about(request):
     return render(request, 'tv/about.html', {'title': 'About'})
+
+
+class ModelTestView(ListView):
+    model = StShow
+    template_name = 'tv/home.html'
+    context_object_name = "shows"
+
+
+class TopTemplateView(TemplateView):
+    context_object_name = 'show'
+    template_name = 'tv/top_rated.html'
+
+    def get_context_data(self, **kwargs):
+        url = 'https://api.themoviedb.org/3/tv/popular?api_key=' + TMDB_API + '&language=en-US&page=1'
+        response = requests.get(url)
+        parsed_data = json.loads(response.text)
+        return parsed_data
+
+
+class DetailTemplateView(TemplateView):
+    context_object_name = 'show'
+    template_name = 'tv/show_detail.html'
+
+    def get_context_data(self, **kwargs):
+        query = str(self.kwargs.get('pk'))
+
+        url = 'https://api.themoviedb.org/3/tv/' + query + '?api_key=' + TMDB_API + '&language=en-US'
+        response = requests.get(url)
+        context = json.loads(response.text)
+        return context

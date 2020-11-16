@@ -1,7 +1,8 @@
 {% extends "tv/base.html" %}
 {% block content %}
-
-
+{% for genre in genres %}
+    <h1>genre.name</h1>
+{%endfor%}
     {% for show in shows %}
   <div class="col mb-4">
     <div class="card h-100">
