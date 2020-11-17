@@ -1,11 +1,13 @@
+from datetime import date
 
+from dateutil.utils import today
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from TvChkr.settings import TMDB_API, PLACEHOLDER_IMAGE
-from users.models import Group
+from users.models import Group, Membership
 from .models import Show, StShow
 from django.contrib.auth.models import User
 import requests
@@ -14,7 +16,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q
 from django.contrib import messages
 from .forms import GroupUpdateForm
-from .services import add_show
+from .services import add_show, add_user_to_group
+import feedparser
 
 
 class SearchResultsView(ListView):
@@ -37,8 +40,8 @@ class SearchResultsView(ListView):
         for x in results:
             data.append(x)
         # object_list = Show.objects.filter(Q(title__icontains=query) | Q(genre__icontains=query))
-        print(PLACEHOLDER_IMAGE)
-        data.append({'placeholder': PLACEHOLDER_IMAGE})
+
+        data.append({'search': self.request.GET.get('q')})
         return data
 
 
@@ -47,7 +50,7 @@ class ShowlistView(ListView):
     template_name = 'tv/home.html'
     context_object_name = 'shows'
     ordering = ['airdate']
-    paginate_by = 8
+    paginate_by = 10
     # genres = services.genre_list()
 
 
@@ -106,7 +109,7 @@ def show_detail(request, pk):
     data = json.loads(response.text)
 
     if request.method == 'POST':
-        print('button pressed')
+
         add_show(request, pk)
 
     return render(request, 'tv/show_detail.html', {"show": data})
@@ -135,10 +138,17 @@ def playing_today(request):
     return render(request, 'tv/today.html', {"data": data})
 
 
-def about(request):
-    if request.method == "GET":
-        print('FINALLY!*****************')
-    return render(request, 'tv/about.html', {'title': 'About'})
+
+
+
+def feed(request):
+    d = feedparser.parse('https://rss.tvguide.com/breakingnews/')
+
+    x = d['items']
+    for y in x:
+        print(y.media_thumbnail[0]['url'])
+
+    return render(request, 'tv/feed.html', {'feeds': d})
 
 
 class ModelTestView(ListView):
@@ -186,5 +196,21 @@ class GroupListView(ListView):
     template_name = 'tv/groups.html'
 
 
+class GroupDetailView(DetailView):
+    model = Group
+    template_name = 'tv/group_detail.html'
 
+    def post(self, request, *args, **kwargs):
+        print(self.kwargs.get('pk'))
 
+        if Group.objects.get(id=self.kwargs.get('pk')):
+            m1 = Membership(person=request.user, group=Group.objects.get(id=self.kwargs.get('pk')), date_joined=today())
+            m1.save()
+        return redirect('groups')
+
+    def get_context_data(self, **kwargs):
+        group = Group.objects.get(pk=self.kwargs.get('pk'))
+        d = feedparser.parse('https://www.tvfanatic.com/rss.xml')
+        context = {'group': group,
+                   'users': group.members.all()}
+        return context

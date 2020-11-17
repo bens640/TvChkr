@@ -1,7 +1,8 @@
 {% extends "tv/base.html" %} {% block content %}
 
-
+<h1>Top Rated Shows</h1>
     <div class="row" >
+
     {% for show in results %}
     {% include "tv/card_template.html" %}
 

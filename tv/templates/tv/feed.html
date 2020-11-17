@@ -1,0 +1,16 @@
+{% extends "tv/base.html" %}
+{% block content %}
+    <h1>News Feed <small>Powered by TVGuide</small></h1>
+
+    {% for entry in feeds.entries %}
+
+
+    <div class="list-group">
+        <a href="{{entry.link}}" class="list-group-item list-group-item-action ">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{entry.title}}</h5>
+    </div>
+  </a>
+    </div>
+    {% endfor %}
+{%  endblock content %}
