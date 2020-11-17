@@ -1,12 +1,11 @@
 {% extends "tv/base.html" %} {% block content %}
-<div class="row" >
-    {% for show in results %}
 
-    <div class="col" >
-        <a href="{% url 'tv-detail' show.id %}">
-        <img src="https://image.tmdb.org/t/p/w185/{{ show.poster_path }}"  alt="...">
-        </a>
-    </div>
+
+    <div class="row" >
+    {% for show in results %}
+    {% include "tv/card_template.html" %}
+
+
 {% endfor %}
 </div>
 {% endblock content %}

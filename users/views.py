@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
+from tv.models import Show, StShow
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 
@@ -30,8 +32,12 @@ def profile(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
+    shows = StShow.objects.filter(user=request.user)
+
     context = {
         'u_form': u_form,
-        'p_form': p_form
+        'p_form': p_form,
+        'shows': shows
     }
+
     return render(request, 'users/profile.html', context)

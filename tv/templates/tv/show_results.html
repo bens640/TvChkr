@@ -6,8 +6,15 @@
     {% for show in shows %}
 
     <div class="col" >
-        <a href="{% url 'tv-detail' show.id %}">
-        <img src="https://image.tmdb.org/t/p/w185/{{ show.poster_path }}"  alt="...">
+        <a href="{% url 'tv-detail' show.id %}" style="text-decoration: none">
+            {% if show.poster_path != null %}
+            <img src="https://image.tmdb.org/t/p/w185/{{ show.poster_path }}"  alt="...">
+            {% else %}
+            <div class="border" style="width: 185px; height: 280px">
+            <img src="{{ placeholder }}"  alt="...">
+                <h2 class="d-flex justify-content-center mt-3 text-center " >{{ show.name }}</h2>
+            </div>
+            {% endif %}
         </a>
     </div>
 {% endfor %}

@@ -3,11 +3,7 @@
 <div class="row" >
     {% for show in data %}
 
-    <div class="col" >
-        <a href="{% url 'tv-detail' show.id %}">
-        <img src="https://image.tmdb.org/t/p/w185/{{ show.poster_path }}"  alt="...">
-        </a>
-    </div>
+ {% include "tv/card_template.html" %}
 {% endfor %}
 </div>
 {% endblock content %}
