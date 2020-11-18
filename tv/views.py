@@ -27,13 +27,15 @@ class SearchResultsView(ListView):
     paginate_by = 8
 
     def get_queryset(self):
+
         if self.request.GET.get('q'):
-            query = self.request.GET.get('q')
+            formatted_query = self.request.GET.get('q')
+
         else:
-            query = 'the'
+            formatted_query = 'the'
 
         response = requests.get(
-            'https://api.themoviedb.org/3/search/tv?api_key=' + TMDB_API + '&language=en-US&query=' + query + '&include_adult=false')
+            'https://api.themoviedb.org/3/search/tv?api_key=' + TMDB_API + '&language=en-US&query=' + formatted_query + '&include_adult=false')
         parsed_data = json.loads(response.text)
         data = []
         results = (parsed_data['results'])
@@ -41,7 +43,7 @@ class SearchResultsView(ListView):
             data.append(x)
         # object_list = Show.objects.filter(Q(title__icontains=query) | Q(genre__icontains=query))
 
-        data.append({'search': self.request.GET.get('q')})
+
         return data
 
 
