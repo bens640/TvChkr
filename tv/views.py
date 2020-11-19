@@ -1,5 +1,5 @@
 from datetime import date
-
+from dateutil.parser import *
 from dateutil.utils import today
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -16,7 +16,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q
 from django.contrib import messages
 from .forms import GroupUpdateForm
-from .services import add_show, add_user_to_group
+from .services import add_show, add_show_to_group
 import feedparser
 
 
@@ -24,7 +24,7 @@ class SearchResultsView(ListView):
     model = Show
     template_name = 'tv/show_results.html'
     context_object_name = 'shows'
-    paginate_by = 8
+
 
     def get_queryset(self):
 
@@ -42,7 +42,6 @@ class SearchResultsView(ListView):
         for x in results:
             data.append(x)
         # object_list = Show.objects.filter(Q(title__icontains=query) | Q(genre__icontains=query))
-
 
         return data
 
@@ -110,21 +109,24 @@ def show_detail(request, pk):
         'https://api.themoviedb.org/3/tv/' + str(pk) + '?api_key=' + TMDB_API + '&language=en-US')
     data = json.loads(response.text)
 
-    if request.method == 'POST':
+    my_groups = Membership.objects.filter(person=request.user)
 
+    if request.POST.get('test', ""):
+        # add_show_to_group(request,pk, my_groups)
+        print('mygroup')
+    if request.POST.get('myshow', ""):
         add_show(request, pk)
+        print('myshow')
 
-    return render(request, 'tv/show_detail.html', {"show": data})
+    return render(request, 'tv/show_detail.html', {"show": data, 'groups':my_groups})
 
 
 def apitest(request):
     response = requests.get(
         'https://api.themoviedb.org/3/tv/on_the_air?api_key=' + TMDB_API + '&language=en-US&page=1&query=mandalorian&include_adult=false')
-
     parsed_data = json.loads(response.text)
     data = []
     results = (parsed_data['results'])
-
     return render(request, 'tv/apitest.html', {"show": results})
 
 
@@ -136,20 +138,11 @@ def playing_today(request):
     results = (parsed_data['results'])
     for x in results:
         data.append(x)
-
     return render(request, 'tv/today.html', {"data": data})
-
-
-
 
 
 def feed(request):
     d = feedparser.parse('https://rss.tvguide.com/breakingnews/')
-
-    x = d['items']
-    for y in x:
-        print(y.media_thumbnail[0]['url'])
-
     return render(request, 'tv/feed.html', {'feeds': d})
 
 

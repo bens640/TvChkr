@@ -15,6 +15,10 @@
   <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
       <h1>{{ group.name }}</h1>
       <p>{{ group.about }}</p>
+      <form name="add_user_togroup" method="post" action="">
+ {% csrf_token %}
+    <input type="submit" value="Add me to the group" />
+</form>
   </div>
   <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <ul>
@@ -34,9 +38,6 @@
   </div>
 </div>
 
-<form name="add_user_togroup" method="post" action="">
- {% csrf_token %}
-    <input type="submit" value="Add me to the group" />
-</form>
+
 
 {%  endblock content %}

@@ -1,8 +1,14 @@
+from datetime import date, timedelta
+
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.views.generic.edit import CreateView, UpdateView
 from tv.models import Show, StShow
+from tv.services import remove_show_user
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 
@@ -34,10 +40,15 @@ def profile(request):
         p_form = ProfileUpdateForm(instance=request.user.profile)
     shows = StShow.objects.filter(user=request.user)
 
+    today = Show.objects.filter(user=request.user, airdate=date.today())
+
     context = {
         'u_form': u_form,
         'p_form': p_form,
-        'shows': shows
+        'shows': shows,
+        'today': today
     }
 
     return render(request, 'users/profile.html', context)
+
+

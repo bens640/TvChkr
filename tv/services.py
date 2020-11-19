@@ -1,5 +1,6 @@
 import json
 from collections import defaultdict
+from dateutil.parser import *
 
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -26,6 +27,10 @@ def add_show(request, pk):
     url = 'https://api.themoviedb.org/3/tv/' + str(pk) + '?api_key=' + TMDB_API + '&language=en-US'
     response = requests.get(url)
     data = json.loads(response.text)
+    if data['next_episode_to_air']:
+        next_airdate = parse(data['next_episode_to_air']['air_date'])
+    else:
+        next_airdate = False
     if Show.objects.filter(show_num=data['id']).exists():
         s1 = Show.objects.get(show_num=data['id'])
         ss = StShow(show=s1, user=request.user)
@@ -33,8 +38,13 @@ def add_show(request, pk):
         messages.success(request, data['name'] + ' has been added')
 
     else:
-        s = Show(user=request.user, show_num = data['id'], title = data['name'], poster_path=data['poster_path'])
-        s.save()
+        if next_airdate:
+            s = Show(user=request.user, show_num = data['id'], title = data['name'], poster_path=data['poster_path'],
+                     airdate=next_airdate)
+            s.save()
+        else:
+            s = Show(user=request.user, show_num=data['id'], title=data['name'], poster_path=data['poster_path'])
+            s.save()
 
         ss = StShow(show=s, user=request.user)
         ss.save()
@@ -42,8 +52,32 @@ def add_show(request, pk):
         print("Created and saved")
 
 
-def add_user_to_group(request, pk):
-    if Group.objects.get(id=pk):
-        if Membership.objects(person=request.user, group=pk):
-            m1 = Membership(person = request.user, group=pk)
-            m1.save()
+def add_show_to_group(request, pk, group):
+    url = 'https://api.themoviedb.org/3/tv/' + str(pk) + '?api_key=' + TMDB_API + '&language=en-US'
+    response = requests.get(url)
+    data = json.loads(response.text)
+    if data['next_episode_to_air']:
+        next_airdate = parse(data['next_episode_to_air']['air_date'])
+    else:
+        next_airdate = False
+    if Show.objects.filter(show_num=data['id']).exists():
+        s1 = Show.objects.get(show_num=data['id'])
+        ss = StShow(show=s1, user=request.user, group=group)
+        ss.save()
+        messages.success(request, data['name'] + ' has been added')
+    else:
+        if next_airdate:
+            s = Show(user=request.user, show_num = data['id'], title = data['name'], poster_path=data['poster_path'],
+                     airdate=next_airdate)
+            s.save()
+        else:
+            s = Show(user=request.user, show_num=data['id'], title=data['name'], poster_path=data['poster_path'])
+            s.save()
+
+        ss = StShow(show=s, user=request.user, group=group)
+        ss.save()
+        messages.success(request, data['name'] + ' has been added to '+ group)
+        print("Created and saved to group")
+def remove_show_user(request, show):
+    x = StShow.objects.get(user=request.user, show = show)
+    x.delete()

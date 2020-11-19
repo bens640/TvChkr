@@ -7,7 +7,7 @@
     {{ g.name }} |
     {% endfor %} </h6>
     <h3>{{ show.overview }}</h3>
-    <h4>First Air Date: {{ show.first_air_date }}</h4>
+    <h4>First Air Date: {{ show.first_air_date}}</h4>
     {% if show.in_production and  show.next_episode_to_air == null %}<h4>Next Air Date: TBD</h4>
     {% elif show.in_production and  show.next_episode_to_air != null%} <h4>Next Air Date: {{ show.next_episode_to_air.air_date }}</h4>
 
@@ -15,8 +15,25 @@
     {% if user.is_authenticated %}
     <form action="#" method="post">
     {% csrf_token %}
-    <input type="submit" class="btn btn-primary" value="Add to my shows" name="addBtn">
+    <input type="submit" name="myshow" class="btn btn-primary" value="Add to my shows">
+    <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    My Groups
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {%  for group in groups%}
+
+            <a class="dropdown-item" name="test" href="#">{{ group.group.name }}</a>
+        {% endfor %}
+   </div>
+    </div>
     </form>
+
+
+
+
+
+
     {% endif %}
 
 {% endblock content %}

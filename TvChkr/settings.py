@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'storages',
+    'django_crontab',
 
 ]
 
@@ -70,6 +71,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+CRONJOBS = [
+    ('59 23 * * 7', 'TvChkr.cron.update_show_date')
 ]
 
 WSGI_APPLICATION = 'TvChkr.wsgi.application'
