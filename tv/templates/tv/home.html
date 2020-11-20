@@ -1,25 +1,8 @@
 {% extends "tv/base.html" %}
 {% block content %}
-{% for genre in genres %}
-    <h1>genre.name</h1>
-{%endfor%}
-<div class="row" >
-    {% for show in shows %}
-    <div class="col" >
-        <a href="{% url 'tv-detail' show.show_num %}">
-            {% if show.poster_path != null %}
-            <img src="https://image.tmdb.org/t/p/w185/{{ show.poster_path }}"  alt="...">
+    {% for genre in genres %}
+        <h1>genre.name</h1>
+    {% endfor %}
 
-            {% else %}
-            <h1>{{ show.name }}</h1>
-            {% endif %}
-        </a>
-           <img class="rounded-circle account-img" width="25"  src="{{ show.user.profile.image.url }}">
-        <span>Added by {{ show.user }}</span>
-    </div>
-{% endfor %}
-</div>
-
-    </div>
-
-{%  endblock content %}
+    {% include "tv/card_template_model.html" %}
+{% endblock content %}

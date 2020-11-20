@@ -1,15 +1,20 @@
-<div class="card mb-3" style="max-width: 540px;">
-  <div class="row no-gutters">
-    <div class="col-md-4">
-      <img src="https://image.tmdb.org/t/p/w500/{{ show.poster_path }}" class="card-img" alt="...">
+   <div class="row row-cols-1 row-cols-md-3">
+        {% for show in shows %}
+            <div class="col mb-4">
+                <div class="card w-auto bg-dark text-white" >
+                    {% if show.poster_path != null %}
+                        <img src="https://image.tmdb.org/t/p/w185/{{ show.poster_path }}" class="card-img-top "
+                             alt="...">
+                    {% else %}
+                        <h1>{{ show.title }}</h1>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ show.title }}</h5>
+                        <img class="rounded-circle account-img" width="25" src="{{ show.user.profile.image.url }}">
+                        <span class="card-title">  Added by {{ show.user }}</span>
+                        <a href="{% url 'tv-detail' show.show_num %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">{{ show.name }}</h5>
-          <h6 class="card-title">{{ show.id }}, First Air date: {{ show.first_air_date}}</h6>
-        <p class="card-text"> <p class="card-text">{{ show.overview }}</p>
-        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-      </div>
-    </div>
-  </div>
-</div>

@@ -1,34 +1,51 @@
 {% extends "tv/base.html" %} {% block content %}
-    {%   if show.poster_path %}
-        <img src="https://image.tmdb.org/t/p/w500/{{ show.poster_path }}"  style="width: 250px" class="rounded mx-auto d-block" alt="...">
+    {% if show.poster_path %}
+        <img src="https://image.tmdb.org/t/p/w500/{{ show.poster_path }}" style="width: 250px"
+             class="rounded mx-auto d-block" alt="...">
     {% endif %}
-<h1>{{ show.name }} {% if not show.in_production  %}<span class="badge badge-danger">Cancelled </span>{% endif %} </h1>
+    <h1>{{ show.name }} {% if not show.in_production %}<span class="badge badge-danger">Cancelled </span>{% endif %}
+    </h1>
     <h6>|{% for g in show.genres %}
-    {{ g.name }} |
+        {{ g.name }} |
     {% endfor %} </h6>
     <h3>{{ show.overview }}</h3>
-    <h4>First Air Date: {{ show.first_air_date}}</h4>
+    <h4>First Air Date: {{ show.first_air_date }}</h4>
     {% if show.in_production and  show.next_episode_to_air == null %}<h4>Next Air Date: TBD</h4>
-    {% elif show.in_production and  show.next_episode_to_air != null%} <h4>Next Air Date: {{ show.next_episode_to_air.air_date }}</h4>
+    {% elif show.in_production and  show.next_episode_to_air != null %}
+        <h4>Next Air Date: {{ show.next_episode_to_air.air_date }}</h4>
 
     {% endif %}
+
+
     {% if user.is_authenticated %}
-    <form action="#" method="post">
-    {% csrf_token %}
-    <input type="submit" name="myshow" class="btn btn-primary" value="Add to my shows">
-    <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    My Groups
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        {%  for group in groups%}
+        <form action="#" method="post">
+            {% csrf_token %}
+            {% if user_info  %}
+        <input type="submit" name="remove_show" class="btn btn-primary" value="Remove from my watchlist">
 
-            <a class="dropdown-item" name="test" href="#">{{ group.group.name }}</a>
-        {% endfor %}
-   </div>
-    </div>
-    </form>
+            {% else %}
+            <input type="submit" name="add_show" class="btn btn-primary" value="Add to my watchlist">
 
+    {% endif %}
+        </form>
+        <form action="#" method="post">
+            {% csrf_token %}
+
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add show to group
+                </button>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {% for group in groups %}
+                        <a class="dropdown-item" href="{% url 'tv-detail' show.id %}"
+                           value="group.id">{{ group.group.name }}</a>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </form>
 
 
 

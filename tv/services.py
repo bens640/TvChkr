@@ -31,7 +31,11 @@ def add_show(request, pk):
         next_airdate = parse(data['next_episode_to_air']['air_date'])
     else:
         next_airdate = False
-    if Show.objects.filter(show_num=data['id']).exists():
+
+    if StShow.objects.filter(user=request.user) and StShow.objects.filter(show=data['id']):
+
+        messages.success(request, data['name'] + ' is already in your watchlist')
+    elif Show.objects.filter(show_num=data['id']).exists():
         s1 = Show.objects.get(show_num=data['id'])
         ss = StShow(show=s1, user=request.user)
         ss.save()
@@ -50,6 +54,13 @@ def add_show(request, pk):
         ss.save()
         messages.success(request, data['name'] + ' has been added')
         print("Created and saved")
+
+def remove_show(request, pk):
+    current_show = Show.objects.filter(show_num=pk).first()
+    show = StShow.objects.filter(show = current_show, user = request.user)
+    show.delete()
+    print(current_show.title +' has been deleted from '+ request.user.username + '\'s watchlist')
+    messages.warning(request,'This show has been removed from your watchlist')
 
 
 def add_show_to_group(request, pk, group):
@@ -81,3 +92,18 @@ def add_show_to_group(request, pk, group):
 def remove_show_user(request, show):
     x = StShow.objects.get(user=request.user, show = show)
     x.delete()
+
+
+def update_show_date():
+    for show in Show.objects.all():
+        show.airdate = get_new_airdate(show.show_num)
+        print('airdate updated: '+ show.title + ' : ' + str(show.airdate))
+
+def get_new_airdate(pk):
+    response = requests.get(
+        'https://api.themoviedb.org/3/tv/' + str(pk) + '?api_key=' + TMDB_API + '&language=en-US')
+    data = json.loads(response.text)
+    if data['next_episode_to_air']:
+        next_airdate = parse(data['next_episode_to_air']['air_date'])
+
+        return next_airdate

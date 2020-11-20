@@ -16,7 +16,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q
 from django.contrib import messages
 from .forms import GroupUpdateForm
-from .services import add_show, add_show_to_group
+from .services import add_show, add_show_to_group, remove_show
 import feedparser
 
 
@@ -24,7 +24,6 @@ class SearchResultsView(ListView):
     model = Show
     template_name = 'tv/show_results.html'
     context_object_name = 'shows'
-
 
     def get_queryset(self):
 
@@ -51,7 +50,7 @@ class ShowlistView(ListView):
     template_name = 'tv/home.html'
     context_object_name = 'shows'
     ordering = ['airdate']
-    paginate_by = 10
+    paginate_by = 9
     # genres = services.genre_list()
 
 
@@ -108,17 +107,19 @@ def show_detail(request, pk):
     response = requests.get(
         'https://api.themoviedb.org/3/tv/' + str(pk) + '?api_key=' + TMDB_API + '&language=en-US')
     data = json.loads(response.text)
-
+    current_show = Show.objects.filter(show_num = data['id']).first()
     my_groups = Membership.objects.filter(person=request.user)
+    user_info = StShow.objects.filter(show=current_show).filter(user=request.user).first()
 
-    if request.POST.get('test', ""):
-        # add_show_to_group(request,pk, my_groups)
-        print('mygroup')
-    if request.POST.get('myshow', ""):
+    if request.POST.get('add_show', ""):
         add_show(request, pk)
-        print('myshow')
-
-    return render(request, 'tv/show_detail.html', {"show": data, 'groups':my_groups})
+        return redirect(show_detail,data['id'])
+    elif request.POST.get('remove_show', ""):
+        remove_show(request, pk)
+        print('remove')
+        return redirect(show_detail, data['id'])
+    return render(request, 'tv/show_detail.html', {"show": data, 'groups': my_groups,
+                                                   'user_info': user_info})
 
 
 def apitest(request):
@@ -205,7 +206,8 @@ class GroupDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         group = Group.objects.get(pk=self.kwargs.get('pk'))
-        d = feedparser.parse('https://www.tvfanatic.com/rss.xml')
+        shows = StShow.objects.filter(group=group)
         context = {'group': group,
-                   'users': group.members.all()}
+                   'users': group.members.all(),
+                   'shows': shows}
         return context
