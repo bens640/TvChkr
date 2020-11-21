@@ -3,16 +3,16 @@
         <img src="https://image.tmdb.org/t/p/w500/{{ show.poster_path }}" style="width: 250px"
              class="rounded mx-auto d-block" alt="...">
     {% endif %}
-    <h1>{{ show.name }} {% if not show.in_production %}<span class="badge badge-danger">Cancelled </span>{% endif %}
+    <h1>{{ show.name }} {% if not show.in_production %}<span class="badge badge-danger">Ended or Cancelled </span>{% endif %}
     </h1>
     <h6>|{% for g in show.genres %}
         {{ g.name }} |
     {% endfor %} </h6>
     <h3>{{ show.overview }}</h3>
-    <h4>First Air Date: {{ show.first_air_date }}</h4>
+{#    <h4>First Air Date: {{ show.first_air_date }}</h4>#}
     {% if show.in_production and  show.next_episode_to_air == null %}<h4>Next Air Date: TBD</h4>
     {% elif show.in_production and  show.next_episode_to_air != null %}
-        <h4>Next Air Date: {{ show.next_episode_to_air.air_date }}</h4>
+        <h4>Next Air Date: {{airdate  }}</h4>
 
     {% endif %}
 

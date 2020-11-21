@@ -64,31 +64,7 @@ def remove_show(request, pk):
 
 
 def add_show_to_group(request, pk, group):
-    url = 'https://api.themoviedb.org/3/tv/' + str(pk) + '?api_key=' + TMDB_API + '&language=en-US'
-    response = requests.get(url)
-    data = json.loads(response.text)
-    if data['next_episode_to_air']:
-        next_airdate = parse(data['next_episode_to_air']['air_date'])
-    else:
-        next_airdate = False
-    if Show.objects.filter(show_num=data['id']).exists():
-        s1 = Show.objects.get(show_num=data['id'])
-        ss = StShow(show=s1, user=request.user, group=group)
-        ss.save()
-        messages.success(request, data['name'] + ' has been added')
-    else:
-        if next_airdate:
-            s = Show(user=request.user, show_num = data['id'], title = data['name'], poster_path=data['poster_path'],
-                     airdate=next_airdate)
-            s.save()
-        else:
-            s = Show(user=request.user, show_num=data['id'], title=data['name'], poster_path=data['poster_path'])
-            s.save()
-
-        ss = StShow(show=s, user=request.user, group=group)
-        ss.save()
-        messages.success(request, data['name'] + ' has been added to '+ group)
-        print("Created and saved to group")
+    return True
 def remove_show_user(request, show):
     x = StShow.objects.get(user=request.user, show = show)
     x.delete()
@@ -96,8 +72,10 @@ def remove_show_user(request, show):
 
 def update_show_date():
     for show in Show.objects.all():
-        show.airdate = get_new_airdate(show.show_num)
-        print('airdate updated: '+ show.title + ' : ' + str(show.airdate))
+        if show.airdate:
+            show.airdate = get_new_airdate(show.show_num)
+            show.save()
+
 
 def get_new_airdate(pk):
     response = requests.get(

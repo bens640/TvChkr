@@ -1,8 +1,10 @@
 {% extends "tv/base.html" %}
+{% load static %}
 {% block content %}
-    {% for genre in genres %}
+    {% for genre in genres %}`
         <h1>genre.name</h1>
     {% endfor %}
+
 
     {% include "tv/card_template_model.html" %}
 {% endblock content %}

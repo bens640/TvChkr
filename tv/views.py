@@ -16,7 +16,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q
 from django.contrib import messages
 from .forms import GroupUpdateForm
-from .services import add_show, add_show_to_group, remove_show
+from .services import add_show, add_show_to_group, remove_show, update_show_date
 import feedparser
 
 
@@ -46,11 +46,13 @@ class SearchResultsView(ListView):
 
 
 class ShowlistView(ListView):
+    update_show_date()
     model = Show
     template_name = 'tv/home.html'
     context_object_name = 'shows'
-    ordering = ['airdate']
+    ordering = ['-airdate']
     paginate_by = 9
+
     # genres = services.genre_list()
 
 
@@ -107,19 +109,24 @@ def show_detail(request, pk):
     response = requests.get(
         'https://api.themoviedb.org/3/tv/' + str(pk) + '?api_key=' + TMDB_API + '&language=en-US')
     data = json.loads(response.text)
-    current_show = Show.objects.filter(show_num = data['id']).first()
+    current_show = Show.objects.filter(show_num=data['id']).first()
     my_groups = Membership.objects.filter(person=request.user)
     user_info = StShow.objects.filter(show=current_show).filter(user=request.user).first()
-
+    if data['next_episode_to_air']:
+        next_air = parse(data['next_episode_to_air']['air_date']).date()
+    else:
+        next_air = 'TBD'
     if request.POST.get('add_show', ""):
         add_show(request, pk)
-        return redirect(show_detail,data['id'])
+        return redirect(show_detail, data['id'])
     elif request.POST.get('remove_show', ""):
         remove_show(request, pk)
         print('remove')
         return redirect(show_detail, data['id'])
+
     return render(request, 'tv/show_detail.html', {"show": data, 'groups': my_groups,
-                                                   'user_info': user_info})
+                                                   'user_info': user_info,
+                                                   'airdate': next_air})
 
 
 def apitest(request):

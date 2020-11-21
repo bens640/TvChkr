@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import *
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
@@ -27,7 +27,6 @@ def register(request):
 
 @login_required()
 def profile(request):
-    update_show_date()
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
@@ -41,12 +40,12 @@ def profile(request):
         p_form = ProfileUpdateForm(instance=request.user.profile)
     shows = StShow.objects.filter(user=request.user)
     todays_shows = []
-
+    print(date.today())
     for x in shows:
         print(x.show.airdate)
         if x.show.airdate == date.today():
             todays_shows.append(x)
-            print(x.show.name)
+
 
     context = {
         'u_form': u_form,

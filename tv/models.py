@@ -8,8 +8,8 @@ from users.models import Group
 
 class Show(models.Model):
     title = models.CharField(max_length=100, default="Title")
-    airdate = models.DateTimeField(default=timezone.now)
-    genre = models.CharField(max_length=100)
+    airdate = models.DateField(null=True, blank= True)
+    genre = models.CharField(max_length=100, null=True, blank= True)
     poster_path = models.CharField(max_length=100, default="Title")
     show_num = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
