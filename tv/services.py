@@ -70,7 +70,7 @@ def remove_show_user(request, show):
     x.delete()
 
 
-def update_show_date():
+'''def update_show_date():
     for show in Show.objects.all():
         if show.airdate:
             show.airdate = get_new_airdate(show.show_num)
@@ -84,4 +84,4 @@ def get_new_airdate(pk):
     if data['next_episode_to_air']:
         next_airdate = parse(data['next_episode_to_air']['air_date'])
 
-        return next_airdate
+        return next_airdate'''
