@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 from tv.models import Show, StShow
-from tv.services import remove_show_user, update_show_date
+from tv.services import remove_show_user
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 

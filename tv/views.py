@@ -16,7 +16,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q
 from django.contrib import messages
 from .forms import GroupUpdateForm
-from .services import add_show, add_show_to_group, remove_show, update_show_date
+from .services import add_show, add_show_to_group, remove_show
 import feedparser
 
 
@@ -46,7 +46,7 @@ class SearchResultsView(ListView):
 
 
 class ShowlistView(ListView):
-    update_show_date()
+    # update_show_date()
     model = Show
     template_name = 'tv/home.html'
     context_object_name = 'shows'
