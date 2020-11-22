@@ -28,12 +28,12 @@ class SearchResultsView(ListView):
     def get_queryset(self):
 
         if self.request.GET.get('q'):
-            formatted_query = self.request.GET.get('q')
+            query = self.request.GET.get('q')
         else:
-            formatted_query = 'the'
+            query = 'the'
 
         response = requests.get(
-            'https://api.themoviedb.org/3/search/tv?api_key=' + TMDB_API + '&language=en-US&query=' + formatted_query + '&include_adult=false')
+            'https://api.themoviedb.org/3/search/tv?api_key=' + TMDB_API + '&language=en-US&query=' + query + '&include_adult=false')
         parsed_data = json.loads(response.text)
         data = []
         results = (parsed_data['results'])
@@ -50,7 +50,7 @@ class ShowlistView(ListView):
     template_name = 'tv/home.html'
     context_object_name = 'shows'
     ordering = ['-airdate']
-    paginate_by = 9
+    paginate_by = 8
 
     # genres = services.genre_list()
 
