@@ -1,23 +1,23 @@
 {% extends "tv/base.html" %} {% block content %}
     {% if show.poster_path %}
         <a href="{{ show.homepage }}">
-        <img src="https://image.tmdb.org/t/p/w500/{{ show.poster_path }}" style="width: 250px"
-             class="rounded mx-auto d-block" alt="...">
+            <img src="https://image.tmdb.org/t/p/w500/{{ show.poster_path }}" style="width: 250px"
+                 class="rounded mx-auto d-block shadow" alt="...">
         </a>
     {% endif %}
-    <h1>{{ show.name }} {% if not show.in_production %}<span class="badge badge-danger">Ended or Cancelled </span>{% endif %}
+    <h1>{{ show.name }} {% if not show.in_production %}
+        <span class="badge badge-danger">Ended or Cancelled </span>{% endif %}
     </h1>
-    <div >
-        <img class="mb-2" style="width: 50px" src="https://image.tmdb.org/t/p/w500/{{ show.networks.0.logo_path }}" style="width: 250px"
+    <div>
+        <img class="mb-2" style="width: 50px" src="https://image.tmdb.org/t/p/w500/{{ show.networks.0.logo_path }}">
     </div>
     <h6>|{% for g in show.genres %}
         {{ g.name }} |
     {% endfor %} </h6>
     <h3>{{ show.overview }}</h3>
-{#    <h4>First Air Date: {{ show.first_air_date }}</h4>#}
     {% if show.in_production and  show.next_episode_to_air == null %}<h4>Next Air Date: TBD</h4>
     {% elif show.in_production and  show.next_episode_to_air != null %}
-        <h4>Next Air Date: {{airdate  }}</h4>
+        <h4>Next Air Date: {{ airdate }}</h4>
 
     {% endif %}
 
@@ -25,13 +25,13 @@
     {% if user.is_authenticated %}
         <form action="#" method="post">
             {% csrf_token %}
-            {% if user_info  %}
-        <input type="submit" name="remove_show" class="btn btn-primary" value="Remove from my watchlist">
+            {% if user_has_show %}
+                <input type="submit" name="remove_show" class="btn btn-primary" value="Remove from my watchlist">
 
             {% else %}
-            <input type="submit" name="add_show" class="btn btn-primary" value="Add to my watchlist">
+                <input type="submit" name="add_show" class="btn btn-primary" value="Add to my watchlist">
 
-    {% endif %}
+            {% endif %}
         </form>
         <form action="#" method="post">
             {% csrf_token %}
@@ -44,7 +44,7 @@
 
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% for group in groups %}
-                        <a class="dropdown-item" href="{% url 'profile'  %}"
+                        <a class="dropdown-item" href="{% url 'profile' %}"
                            value="group.id">{{ group.group.name }}</a>
                     {% endfor %}
                 </div>

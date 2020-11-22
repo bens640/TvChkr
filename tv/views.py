@@ -110,7 +110,7 @@ def show_detail(request, pk):
     data = json.loads(response.text)
     current_show = Show.objects.filter(show_num=data['id']).first()
     my_groups = Membership.objects.filter(person=request.user)
-    user_info = StShow.objects.filter(show=current_show).filter(user=request.user).first()
+    user_has_show = StShow.objects.filter(show=current_show).filter(user=request.user).first()
     if data['next_episode_to_air']:
         next_air = parse(data['next_episode_to_air']['air_date']).date()
     else:
@@ -124,7 +124,7 @@ def show_detail(request, pk):
         return redirect(show_detail, data['id'])
 
     return render(request, 'tv/show_detail.html', {"show": data, 'groups': my_groups,
-                                                   'user_info': user_info,
+                                                   'user_has_show': user_has_show,
                                                    'airdate': next_air})
 
 
