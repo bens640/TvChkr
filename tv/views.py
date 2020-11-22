@@ -29,7 +29,6 @@ class SearchResultsView(ListView):
 
         if self.request.GET.get('q'):
             formatted_query = self.request.GET.get('q')
-
         else:
             formatted_query = 'the'
 

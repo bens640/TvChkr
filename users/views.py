@@ -44,7 +44,9 @@ def profile(request):
     for x in shows:
         print(x.show.airdate)
         if x.show.airdate == date.today():
-            todays_shows.append(x)
+
+            todays_shows.append(x.show)
+
 
 
     context = {
